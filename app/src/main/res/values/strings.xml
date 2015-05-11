@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">FullContactApp</string>
+    <string name="action_settings">Settings</string>
+
+    <!--Search screen-->
+
+    <string name="domain">Type in domain</string>
+    <string name="search">Search</string>
+
+
+    <!--Recycler view stuff-->
+    <string name="no_info">No information</string>
+
+
+    <!--Error messages-->
+    <string name="try_again">Write domain correctly and try again.</string>
+    <string name="incorrect_domain_url">Incorrect domain url!</string>
+    <string name="network_timeout">Network timeout error!</string>
+    <string name="auth_failure">Authentication Failure error!</string>
+    <string name="server_error">Server error!</string>
+    <string name="network_error">Network error!</string>
+    <string name="parse_error">Parse error!</string>
+    <string name="data_parsing_error">Erorr parsing data!</string>
+
+
+</resources>
