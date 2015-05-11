@@ -42,6 +42,7 @@ public class SearchActivity extends MenuActivity {
     private ProgressBar progressBar;
     private TextView errorMsgTV;
     private AutoCompleteTextView searchText;
+    private Button searchButton;
 
     private List<String> domains = new ArrayList<String>();
 
@@ -67,13 +68,14 @@ public class SearchActivity extends MenuActivity {
         addDomainHistory();
 
 
-        Button searchButton = (Button) findViewById(R.id.searchButton);
+        searchButton = (Button) findViewById(R.id.searchButton);
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 errorMsgTV.setVisibility(View.GONE);
+                searchButton .setEnabled(false);
 
                 if(Patterns.WEB_URL.matcher(searchText.getText().toString()).matches()){
                     progressBar.setVisibility(View.VISIBLE);
@@ -81,6 +83,7 @@ public class SearchActivity extends MenuActivity {
                 } else {
                     errorMsgTV.setVisibility(View.VISIBLE);
                     errorMsgTV.setText(getString(R.string.incorrect_domain_url)+" "+getString(R.string.try_again));
+                    searchButton .setEnabled(true);
                 }
 
                 InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -165,7 +168,6 @@ public class SearchActivity extends MenuActivity {
                                         try {
                                             jsondata = emailsArray.getJSONObject(i);
                                             company.setEmail(jsondata.optString("value"));
-                                            Log.d("comp", jsondata.optString("value"));
                                             companyData.add(company);
                                         } catch (JSONException e) {
                                             e.printStackTrace();
@@ -206,6 +208,7 @@ public class SearchActivity extends MenuActivity {
                                 Intent intent = new Intent(getBaseContext(), ResultActivity.class);
                                 intent.putParcelableArrayListExtra("companyData", companyData);
                                 startActivity(intent);
+                                searchButton .setEnabled(true);
 
 
                             } catch (JSONException e) {
@@ -214,6 +217,7 @@ public class SearchActivity extends MenuActivity {
                                 progressBar.setVisibility(View.GONE);
                                 errorMsgTV.setText(getString(R.string.data_parsing_error) + " " + getString(R.string.try_again));
                                 errorMsgTV.setVisibility(View.VISIBLE);
+                                searchButton .setEnabled(true);
                             }
 
                         }
@@ -241,6 +245,7 @@ public class SearchActivity extends MenuActivity {
 
                             errorMsgTV.setText(errorMsg + " " + getString(R.string.try_again));
                             errorMsgTV.setVisibility(View.VISIBLE);
+                            searchButton .setEnabled(true);
 
                         }
                     }
@@ -250,6 +255,7 @@ public class SearchActivity extends MenuActivity {
             progressBar.setVisibility(View.GONE);
             errorMsgTV.setText(getString(R.string.data_parsing_error) + " " + getString(R.string.try_again));
             errorMsgTV.setVisibility(View.VISIBLE);
+            searchButton .setEnabled(true);
         }
     }
 
