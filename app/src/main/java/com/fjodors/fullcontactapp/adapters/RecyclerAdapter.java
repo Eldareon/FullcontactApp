@@ -14,6 +14,9 @@ import com.fjodors.fullcontactapp.models.Company;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Created by Fjodors on 2015.05.10..
  */
@@ -26,83 +29,64 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     private final int TYPE_COMPANY_BIOS = 3;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-
-        //viewtype = TYPE_COMPANY_MAIN_INFO
-        public NetworkImageView companyLogo;
-        public TextView companyName;
-        public TextView companyFoundedYear;
-        public TextView companyEmployeeCount;
-        public TextView companyWebsite;
-
-        //viewtype = TYPE_COMPANY_URLS
-        public TextView companyLinkUrl;
-
-        //viewtype = TYPE_COMPANY_EMAIL
-        public TextView companyEmail;
-
-        //viewtype = TYPE_COMPANY_BIOS
-        public TextView companyTypeName;
-        public TextView companyBio;
-
-
-        public ViewHolder(View v, int viewType) {
-            super(v);
-            if (viewType == TYPE_COMPANY_MAIN_INFO) {
-                companyLogo = (NetworkImageView) v.findViewById(R.id.companyLogo);
-                companyName = (TextView) v.findViewById(R.id.companyName);
-                companyFoundedYear = (TextView) v.findViewById(R.id.foundedYear);
-                companyEmployeeCount = (TextView) v.findViewById(R.id.employeeCount);
-                companyWebsite = (TextView) v.findViewById(R.id.website);
-            } else if (viewType == TYPE_COMPANY_URLS) {
-                companyLinkUrl = (TextView) v.findViewById(R.id.companyUrl);
-            } else if (viewType == TYPE_COMPANY_EMAILS) {
-                companyEmail = (TextView) v.findViewById(R.id.companyEmail);
-            } else if (viewType == TYPE_COMPANY_BIOS) {
-                companyTypeName = (TextView) v.findViewById(R.id.companyTypeName);
-                companyBio = (TextView) v.findViewById(R.id.companyBio);
-            }
+        public ViewHolder(View itemView) {
+            super(itemView);
         }
     }
 
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent,
-                                         int viewType) {
-        View v;
-        ViewHolder vh;
+    public class ViewHolderMainInfo extends ViewHolder {
 
-        switch (viewType) {
-            case TYPE_COMPANY_MAIN_INFO:
-                v = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.rec_view_company_main_info, parent, false);
-                vh = new ViewHolder(v, viewType);
-                return vh;
-            case TYPE_COMPANY_URLS:
-                v = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.rec_view_company_url, parent, false);
-                vh = new ViewHolder(v, viewType);
-                return vh;
+        @Bind(R.id.companyLogo)
+        NetworkImageView companyLogo;
+        @Bind(R.id.companyName)
+        TextView companyName;
+        @Bind(R.id.foundedYear)
+        TextView companyFoundedYear;
+        @Bind(R.id.employeeCount)
+        TextView companyEmployeeCount;
+        @Bind(R.id.website)
+        TextView companyWebsite;
 
-            case TYPE_COMPANY_EMAILS:
-                v = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.rec_view_company_email, parent, false);
-                vh = new ViewHolder(v, viewType);
-                return vh;
-
-            case TYPE_COMPANY_BIOS:
-                v = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.rec_view_company_social_profile, parent, false);
-                vh = new ViewHolder(v, viewType);
-                return vh;
-
-            default:
-                v = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.rec_view_company_main_info, parent, false);
-                vh = new ViewHolder(v, viewType);
-
-                return vh;
+        public ViewHolderMainInfo(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
         }
     }
 
+    public class ViewHolderUrls extends ViewHolder {
+
+        @Bind(R.id.companyUrl)
+        TextView companyLinkUrl;
+
+        public ViewHolderUrls(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    public class ViewHolderEmails extends ViewHolder {
+
+        @Bind(R.id.companyEmail)
+        TextView companyEmail;
+
+        public ViewHolderEmails(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    public class ViewHolderBios extends ViewHolder {
+
+        @Bind(R.id.companyTypeName)
+        TextView companyTypeName;
+        @Bind(R.id.companyBio)
+        TextView companyBio;
+
+        public ViewHolderBios(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
 
     @Override
     public int getItemViewType(int position) {
@@ -124,45 +108,94 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent,
+                                         int viewType) {
+        View v;
 
-        if (position == TYPE_COMPANY_MAIN_INFO) {
-            ImageLoader imageLoader = AppController.getInstance().getImageLoader();
-            holder.companyLogo.setImageUrl(mDataset.get(position).getLogoUrl(), imageLoader);
-            holder.companyName.setText(mDataset.get(position).getName());
-            holder.companyWebsite.setText(mDataset.get(position).getWebsite());
+        LayoutInflater mInflater = LayoutInflater.from(parent.getContext());
 
-            if (!mDataset.get(position).getYearFounded().equalsIgnoreCase(""))
-                holder.companyFoundedYear.setText(mDataset.get(position).getYearFounded());
-            else
-                holder.companyFoundedYear.setText(R.string.no_info);
-            if (!mDataset.get(position).getEmployeeCount().equalsIgnoreCase(""))
-                holder.companyEmployeeCount.setText(mDataset.get(position).getEmployeeCount());
-            else
-                holder.companyEmployeeCount.setText(R.string.no_info);
-        }
-        if (mDataset.get(position).getLinkUrl() != null) {
-            holder.companyLinkUrl.setText(mDataset.get(position).getLinkUrl());
-        }
+        switch (viewType) {
+            case TYPE_COMPANY_MAIN_INFO:
+                v = mInflater.inflate(R.layout.rec_view_company_main_info, parent, false);
+                return new ViewHolderMainInfo(v);
 
-        if (mDataset.get(position).getEmail() != null) {
-            holder.companyEmail.setText(mDataset.get(position).getEmail());
-        }
+            case TYPE_COMPANY_URLS:
+                v = mInflater.inflate(R.layout.rec_view_company_url, parent, false);
+                return new ViewHolderUrls(v);
 
-        if (mDataset.get(position).getTypeName() != null) {
-            holder.companyTypeName.setText(mDataset.get(position).getTypeName());
-            holder.companyBio.setText(mDataset.get(position).getBioText());
+            case TYPE_COMPANY_EMAILS:
+                v = mInflater.inflate(R.layout.rec_view_company_email, parent, false);
+                return new ViewHolderEmails(v);
+
+            case TYPE_COMPANY_BIOS:
+                v = mInflater.inflate(R.layout.rec_view_company_social_profile, parent, false);
+                return new ViewHolderBios(v);
+
+            default:
+                v = mInflater.inflate(R.layout.rec_view_company_main_info, parent, false);
+                return new ViewHolderMainInfo(v);
         }
 
     }
 
-    public RecyclerAdapter(ArrayList<Company> myDataset) {
-        mDataset = myDataset;
+
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+
+        switch (viewHolder.getItemViewType()) {
+
+            case TYPE_COMPANY_MAIN_INFO:
+
+                ViewHolderMainInfo viewHolderMainInfo = (ViewHolderMainInfo) viewHolder;
+
+                ImageLoader imageLoader = AppController.getInstance().getImageLoader();
+                viewHolderMainInfo.companyLogo.setImageUrl(mDataset.get(position).getLogoUrl(), imageLoader);
+                viewHolderMainInfo.companyName.setText(mDataset.get(position).getName());
+                viewHolderMainInfo.companyWebsite.setText(mDataset.get(position).getWebsite());
+
+                if (!mDataset.get(position).getYearFounded().equalsIgnoreCase(""))
+                    viewHolderMainInfo.companyFoundedYear.setText(mDataset.get(position).getYearFounded());
+                else
+                    viewHolderMainInfo.companyFoundedYear.setText(R.string.no_info);
+
+                if (!mDataset.get(position).getEmployeeCount().equalsIgnoreCase(""))
+                    viewHolderMainInfo.companyEmployeeCount.setText(mDataset.get(position).getEmployeeCount());
+                else
+                    viewHolderMainInfo.companyEmployeeCount.setText(R.string.no_info);
+                break;
+
+            case TYPE_COMPANY_URLS:
+
+                ViewHolderUrls viewHolderUrls = (ViewHolderUrls) viewHolder;
+
+                viewHolderUrls.companyLinkUrl.setText(mDataset.get(position).getLinkUrl());
+                break;
+
+            case TYPE_COMPANY_EMAILS:
+
+                ViewHolderEmails viewHolderEmails = (ViewHolderEmails) viewHolder;
+
+                viewHolderEmails.companyEmail.setText(mDataset.get(position).getEmail());
+                break;
+
+            case TYPE_COMPANY_BIOS:
+
+                ViewHolderBios viewHolderBios = (ViewHolderBios) viewHolder;
+
+                viewHolderBios.companyTypeName.setText(mDataset.get(position).getTypeName());
+                viewHolderBios.companyBio.setText(mDataset.get(position).getBioText());
+                break;
+
+        }
     }
 
     @Override
     public int getItemCount() {
         return mDataset.size();
 
+    }
+
+    public RecyclerAdapter(ArrayList<Company> myDataset) {
+        mDataset = myDataset;
     }
 }

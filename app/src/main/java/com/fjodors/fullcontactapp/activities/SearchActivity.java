@@ -35,14 +35,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 
 public class SearchActivity extends MenuActivity {
 
     protected static final String TAG = "Fullcontact-Search";
-    private ProgressBar progressBar;
-    private TextView errorMsgTV;
-    private AutoCompleteTextView searchText;
-    private Button searchButton;
+
+    @Bind(R.id.progressBar)
+    ProgressBar progressBar;
+    @Bind(R.id.errorMsg)
+    TextView errorMsgTV;
+    @Bind(R.id.search)
+    AutoCompleteTextView searchText;
+    @Bind(R.id.searchButton)
+    Button searchButton;
 
     private List<String> domains = new ArrayList<String>();
 
@@ -54,49 +63,36 @@ public class SearchActivity extends MenuActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        errorMsgTV = (TextView) findViewById(R.id.errorMsg);
-
-        searchText = (AutoCompleteTextView) findViewById(R.id.search);
+        ButterKnife.bind(this);
 
         prefs = this.getSharedPreferences(DOMAINS_KEY, Context.MODE_PRIVATE);
         edit = prefs.edit();
 
         getDomainsFromMemory();
-
         addDomainHistory();
-
-
-        searchButton = (Button) findViewById(R.id.searchButton);
-
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                errorMsgTV.setVisibility(View.GONE);
-                searchButton .setEnabled(false);
-
-                if(Patterns.WEB_URL.matcher(searchText.getText().toString()).matches()){
-                    progressBar.setVisibility(View.VISIBLE);
-                    SearchData(searchText.getText().toString());
-                } else {
-                    errorMsgTV.setVisibility(View.VISIBLE);
-                    errorMsgTV.setText(getString(R.string.incorrect_domain_url)+" "+getString(R.string.try_again));
-                    searchButton .setEnabled(true);
-                }
-
-                InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                mgr.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
-
-            }
-        });
-
 
     }
 
+    @OnClick(R.id.searchButton)
+    public void searchData(){
+        errorMsgTV.setVisibility(View.GONE);
+        searchButton .setEnabled(false);
 
-    public void SearchData(final String domainURL) {
+        if(Patterns.WEB_URL.matcher(searchText.getText().toString()).matches()){
+            progressBar.setVisibility(View.VISIBLE);
+            getData(searchText.getText().toString());
+        } else {
+            errorMsgTV.setVisibility(View.VISIBLE);
+            errorMsgTV.setText(getString(R.string.incorrect_domain_url)+" "+getString(R.string.try_again));
+            searchButton .setEnabled(true);
+        }
+
+        InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        mgr.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
+    }
+
+
+    public void getData(final String domainURL) {
 
         RequestBuilder JSONBuilder = new RequestBuilder();
 
