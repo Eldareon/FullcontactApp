@@ -105,8 +105,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     @Override
     public int getItemViewType(int position) {
 
-        Log.d("position", "position: " + position);
-
         if (position < COMPANY_MAIN_INFO_SIZE)
             return TYPE_COMPANY_MAIN_INFO;
 
