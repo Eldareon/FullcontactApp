@@ -21,6 +21,10 @@ import com.android.volley.ParseError;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fjodors.fullcontactapp.R;
 import com.fjodors.fullcontactapp.controllers.RequestBuilder;
 import com.fjodors.fullcontactapp.listeners.WebResponseCallback;
@@ -30,6 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -53,17 +58,22 @@ public class SearchActivity extends MenuActivity {
     @Bind(R.id.searchButton)
     Button searchButton;
 
-    private List<String> domains = new ArrayList<String>();
+    private List<String> domains;
 
     protected static final String DOMAINS_KEY = "domains";
     private SharedPreferences prefs;
     private SharedPreferences.Editor edit;
+
+    Company company;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         ButterKnife.bind(this);
+
+        domains = new ArrayList<String>();
 
         prefs = this.getSharedPreferences(DOMAINS_KEY, Context.MODE_PRIVATE);
         edit = prefs.edit();
@@ -74,17 +84,17 @@ public class SearchActivity extends MenuActivity {
     }
 
     @OnClick(R.id.searchButton)
-    public void searchData(){
+    public void searchData() {
         errorMsgTV.setVisibility(View.GONE);
-        searchButton .setEnabled(false);
+        searchButton.setEnabled(false);
 
-        if(Patterns.WEB_URL.matcher(searchText.getText().toString()).matches()){
+        if (Patterns.WEB_URL.matcher(searchText.getText().toString()).matches()) {
             progressBar.setVisibility(View.VISIBLE);
             getData(searchText.getText().toString());
         } else {
             errorMsgTV.setVisibility(View.VISIBLE);
-            errorMsgTV.setText(getString(R.string.incorrect_domain_url)+" "+getString(R.string.try_again));
-            searchButton .setEnabled(true);
+            errorMsgTV.setText(getString(R.string.incorrect_domain_url) + " " + getString(R.string.try_again));
+            searchButton.setEnabled(true);
         }
 
         InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -104,107 +114,16 @@ public class SearchActivity extends MenuActivity {
                             try {
                                 Log.i(TAG, "Response: " + data.toString(4));
 
-                                ArrayList<Company> companyData = new ArrayList<Company>();
-
-                                //first - add company main data to arraylist
-
-                                JSONObject organization = new JSONObject(
-                                        data.getString("organization"));
-
-                                Company company = new Company();
-
-                                company.setName(organization.optString("name"));
-                                company.setLogoUrl(data.optString("logo"));
-                                company.setEmployeeCount(organization.optString("approxEmployees"));
-                                company.setYearFounded(organization.optString("founded"));
-                                company.setWebsite(data.optString("website"));
-
-
-                                companyData.add(company);
-
-
-                                //second - add links
-                                try {
-                                    JSONArray linksArray = new JSONArray(
-                                            organization.optString("links"));
-
-
-                                    for (int i = 0; i < linksArray.length(); i++) {
-
-                                        JSONObject jsondata;
-                                        company = new Company();
-
-                                        try {
-                                            jsondata = linksArray.getJSONObject(i);
-                                            company.setLinkUrl(jsondata.optString("url"));
-                                            companyData.add(company);
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                                //third - add emails
-                                try {
-                                    JSONObject contactInfo = new JSONObject(
-                                            organization.optString("contactInfo"));
-
-
-                                    JSONArray emailsArray = new JSONArray(
-                                            contactInfo.optString("emailAddresses"));
-
-
-                                    for (int i = 0; i < emailsArray.length(); i++) {
-
-                                        JSONObject jsondata;
-                                        company = new Company();
-
-                                        try {
-                                            jsondata = emailsArray.getJSONObject(i);
-                                            company.setEmail(jsondata.optString("value"));
-                                            companyData.add(company);
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                                //forth - social bio
-                                try {
-                                    JSONArray socialArray = new JSONArray(
-                                            data.optString("socialProfiles"));
-
-                                    for (int i = 0; i < socialArray.length(); i++) {
-
-                                        JSONObject jsondata;
-                                        company = new Company();
-
-                                        try {
-                                            jsondata = socialArray.getJSONObject(i);
-                                            company.setTypeName(jsondata.optString("typeName"));
-                                            company.setBioText(jsondata.optString("bio"));
-                                            companyData.add(company);
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-
+                                fillCompanyData(data);
+                                
                                 checkIfInHistory(domainURL);
 
                                 progressBar.setVisibility(View.GONE);
 
                                 Intent intent = new Intent(getBaseContext(), ResultActivity.class);
-                                intent.putParcelableArrayListExtra("companyData", companyData);
+                                intent.putExtra("companyData", company);
                                 startActivity(intent);
-                                searchButton .setEnabled(true);
+                                searchButton.setEnabled(true);
 
 
                             } catch (JSONException e) {
@@ -213,7 +132,7 @@ public class SearchActivity extends MenuActivity {
                                 progressBar.setVisibility(View.GONE);
                                 errorMsgTV.setText(getString(R.string.data_parsing_error) + " " + getString(R.string.try_again));
                                 errorMsgTV.setVisibility(View.VISIBLE);
-                                searchButton .setEnabled(true);
+                                searchButton.setEnabled(true);
                             }
 
                         }
@@ -241,7 +160,7 @@ public class SearchActivity extends MenuActivity {
 
                             errorMsgTV.setText(errorMsg + " " + getString(R.string.try_again));
                             errorMsgTV.setVisibility(View.VISIBLE);
-                            searchButton .setEnabled(true);
+                            searchButton.setEnabled(true);
 
                         }
                     }
@@ -251,7 +170,26 @@ public class SearchActivity extends MenuActivity {
             progressBar.setVisibility(View.GONE);
             errorMsgTV.setText(getString(R.string.data_parsing_error) + " " + getString(R.string.try_again));
             errorMsgTV.setVisibility(View.VISIBLE);
-            searchButton .setEnabled(true);
+            searchButton.setEnabled(true);
+        }
+    }
+
+
+
+    public void fillCompanyData(JSONObject data) throws JSONException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        try {
+            company = mapper.readValue(data.toString(), Company.class);
+
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

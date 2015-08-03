@@ -1,6 +1,7 @@
 package com.fjodors.fullcontactapp.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,21 +13,34 @@ import com.fjodors.fullcontactapp.R;
 import com.fjodors.fullcontactapp.app.AppController;
 import com.fjodors.fullcontactapp.models.Company;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
 
 /**
  * Created by Fjodors on 2015.05.10..
  */
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
-    private ArrayList<Company> mDataset;
+    private Company company;
 
     private final int TYPE_COMPANY_MAIN_INFO = 0;
     private final int TYPE_COMPANY_URLS = 1;
     private final int TYPE_COMPANY_EMAILS = 2;
     private final int TYPE_COMPANY_BIOS = 3;
+
+    private final int COMPANY_MAIN_INFO_SIZE = 1;
+
+    private int linkListSize = 0;
+    private int emailListSize = 0;
+    private int bioListSize = 0;
+
+    private List linkList = Collections.EMPTY_LIST;
+    private List emailList = Collections.EMPTY_LIST;
+    private List bioList = Collections.EMPTY_LIST;
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ViewHolder(View itemView) {
@@ -91,16 +105,18 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     @Override
     public int getItemViewType(int position) {
 
-        if (mDataset.get(position).getName() != null)
+        Log.d("position", "position: " + position);
+
+        if (position < COMPANY_MAIN_INFO_SIZE)
             return TYPE_COMPANY_MAIN_INFO;
 
-        if (mDataset.get(position).getLinkUrl() != null)
+        else if (position < linkListSize + COMPANY_MAIN_INFO_SIZE)
             return TYPE_COMPANY_URLS;
 
-        if (mDataset.get(position).getEmail() != null)
+        else if (position < emailListSize + linkListSize + COMPANY_MAIN_INFO_SIZE)
             return TYPE_COMPANY_EMAILS;
 
-        if (mDataset.get(position).getTypeName() != null)
+        else if (position < bioListSize + emailListSize + linkListSize + COMPANY_MAIN_INFO_SIZE)
             return TYPE_COMPANY_BIOS;
 
         return 0;
@@ -132,8 +148,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                 return new ViewHolderBios(v);
 
             default:
-                v = mInflater.inflate(R.layout.rec_view_company_main_info, parent, false);
-                return new ViewHolderMainInfo(v);
+                return null;
         }
 
     }
@@ -149,53 +164,95 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                 ViewHolderMainInfo viewHolderMainInfo = (ViewHolderMainInfo) viewHolder;
 
                 ImageLoader imageLoader = AppController.getInstance().getImageLoader();
-                viewHolderMainInfo.companyLogo.setImageUrl(mDataset.get(position).getLogoUrl(), imageLoader);
-                viewHolderMainInfo.companyName.setText(mDataset.get(position).getName());
-                viewHolderMainInfo.companyWebsite.setText(mDataset.get(position).getWebsite());
 
-                if (!mDataset.get(position).getYearFounded().equalsIgnoreCase(""))
-                    viewHolderMainInfo.companyFoundedYear.setText(mDataset.get(position).getYearFounded());
-                else
-                    viewHolderMainInfo.companyFoundedYear.setText(R.string.no_info);
+                if (company != null) {
 
-                if (!mDataset.get(position).getEmployeeCount().equalsIgnoreCase(""))
-                    viewHolderMainInfo.companyEmployeeCount.setText(mDataset.get(position).getEmployeeCount());
-                else
-                    viewHolderMainInfo.companyEmployeeCount.setText(R.string.no_info);
+                    if (company.getLogo() != null)
+                        viewHolderMainInfo.companyLogo.setImageUrl(company.getLogo(), imageLoader);
+
+                    if (company.getWebsite() != null)
+                        viewHolderMainInfo.companyWebsite.setText(company.getWebsite());
+
+                    if (company.getOrganization() != null) {
+
+                        if (company.getOrganization().getName() != null)
+                            viewHolderMainInfo.companyName.setText(company.getOrganization().getName());
+
+                        if (company.getOrganization().getFounded() != null) {
+                            if (!company.getOrganization().getFounded().equalsIgnoreCase(""))
+                                viewHolderMainInfo.companyFoundedYear.setText(company.getOrganization().getFounded());
+                            else
+                                viewHolderMainInfo.companyFoundedYear.setText(R.string.no_info);
+                        } else {
+                            viewHolderMainInfo.companyFoundedYear.setText(R.string.no_info);
+                        }
+
+                        if (company.getOrganization().getApproxEmployees() != null) {
+                            if (!company.getOrganization().getApproxEmployees().equalsIgnoreCase(""))
+                                viewHolderMainInfo.companyEmployeeCount.setText(company.getOrganization().getApproxEmployees());
+                            else
+                                viewHolderMainInfo.companyEmployeeCount.setText(R.string.no_info);
+                        } else {
+                            viewHolderMainInfo.companyEmployeeCount.setText(R.string.no_info);
+                        }
+                    }
+                }
+
                 break;
 
             case TYPE_COMPANY_URLS:
 
                 ViewHolderUrls viewHolderUrls = (ViewHolderUrls) viewHolder;
 
-                viewHolderUrls.companyLinkUrl.setText(mDataset.get(position).getLinkUrl());
+                viewHolderUrls.companyLinkUrl.setText(company.getOrganization().getLinks().get(position - COMPANY_MAIN_INFO_SIZE).getUrl());
                 break;
 
             case TYPE_COMPANY_EMAILS:
 
                 ViewHolderEmails viewHolderEmails = (ViewHolderEmails) viewHolder;
 
-                viewHolderEmails.companyEmail.setText(mDataset.get(position).getEmail());
+                viewHolderEmails.companyEmail.setText(company.getOrganization().getContactInfo().getEmailAddresses().get(position - linkListSize - COMPANY_MAIN_INFO_SIZE).getValue());
                 break;
 
             case TYPE_COMPANY_BIOS:
 
                 ViewHolderBios viewHolderBios = (ViewHolderBios) viewHolder;
 
-                viewHolderBios.companyTypeName.setText(mDataset.get(position).getTypeName());
-                viewHolderBios.companyBio.setText(mDataset.get(position).getBioText());
+                viewHolderBios.companyTypeName.setText(company.getSocialProfiles().get(position - emailListSize - linkListSize - COMPANY_MAIN_INFO_SIZE).getTypeName());
+                viewHolderBios.companyBio.setText(company.getSocialProfiles().get(position - emailListSize - linkListSize - COMPANY_MAIN_INFO_SIZE).getBio());
                 break;
-
         }
     }
 
     @Override
     public int getItemCount() {
-        return mDataset.size();
-
+        return COMPANY_MAIN_INFO_SIZE + linkListSize + emailListSize + bioListSize;
     }
 
-    public RecyclerAdapter(ArrayList<Company> myDataset) {
-        mDataset = myDataset;
+    public RecyclerAdapter(Company mCompany) {
+        company = mCompany;
+
+        initDataLists();
     }
+
+
+    public void initDataLists() {
+        //check for null to avoid NPE in future for lists
+        if (company.getOrganization() != null) {
+            if (company.getOrganization().getLinks() != null)
+                linkList = company.getOrganization().getLinks();
+            if (company.getOrganization().getContactInfo() != null) {
+                if (company.getOrganization().getContactInfo().getEmailAddresses() != null)
+                    emailList = company.getOrganization().getContactInfo().getEmailAddresses();
+            }
+            if (company.getSocialProfiles() != null)
+                bioList = company.getSocialProfiles();
+        }
+
+        linkListSize = linkList.size();
+        emailListSize = emailList.size();
+        bioListSize = bioList.size();
+    }
+
+
 }

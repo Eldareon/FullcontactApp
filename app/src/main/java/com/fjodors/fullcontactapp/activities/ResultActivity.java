@@ -37,14 +37,14 @@ public class ResultActivity extends MenuActivity {
 
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        ArrayList<Company> companyData =  getIntent().getParcelableArrayListExtra("companyData");
+        Company company =  getIntent().getParcelableExtra("companyData");
 
         mRecyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new RecyclerAdapter(companyData);
+        mAdapter = new RecyclerAdapter(company);
         mRecyclerView.setAdapter(mAdapter);
 
     }
