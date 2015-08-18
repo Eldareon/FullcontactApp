@@ -11,8 +11,6 @@ import com.fjodors.fullcontactapp.R;
 import com.fjodors.fullcontactapp.adapters.RecyclerAdapter;
 import com.fjodors.fullcontactapp.models.Company;
 
-import java.util.ArrayList;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -44,7 +42,7 @@ public class ResultActivity extends MenuActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new RecyclerAdapter(company);
+        mAdapter = new RecyclerAdapter(company, this);
         mRecyclerView.setAdapter(mAdapter);
 
     }
