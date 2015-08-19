@@ -37,10 +37,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     private int emailListSize = 0;
     private int bioListSize = 0;
 
-    private List linkList = Collections.EMPTY_LIST;
-    private List emailList = Collections.EMPTY_LIST;
-    private List bioList = Collections.EMPTY_LIST;
-
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ViewHolder(View itemView) {
@@ -235,22 +231,18 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
 
     public void initDataLists() {
+
         //check for null to avoid NPE in future for lists
         if (company.getOrganization() != null) {
             if (company.getOrganization().getLinks() != null)
-                linkList = company.getOrganization().getLinks();
+                linkListSize = company.getOrganization().getLinks().size();
             if (company.getOrganization().getContactInfo() != null) {
                 if (company.getOrganization().getContactInfo().getEmailAddresses() != null)
-                    emailList = company.getOrganization().getContactInfo().getEmailAddresses();
+                    emailListSize = company.getOrganization().getContactInfo().getEmailAddresses().size();
             }
             if (company.getSocialProfiles() != null)
-                bioList = company.getSocialProfiles();
+                bioListSize = company.getSocialProfiles().size();
         }
 
-        linkListSize = linkList.size();
-        emailListSize = emailList.size();
-        bioListSize = bioList.size();
     }
-
-
 }

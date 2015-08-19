@@ -35,7 +35,7 @@ public class ResultActivity extends MenuActivity {
 
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        Company company =  getIntent().getParcelableExtra("companyData");
+        Company company = (Company) getIntent().getSerializableExtra("companyData");
 
         mRecyclerView.setHasFixedSize(true);
 
