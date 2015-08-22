@@ -21,6 +21,7 @@
     <string name="network_error">Network error!</string>
     <string name="parse_error">Parse error!</string>
     <string name="data_parsing_error">Erorr parsing data!</string>
+    <string name="no_data_error">No data available for this url.</string>
 
 
 </resources>

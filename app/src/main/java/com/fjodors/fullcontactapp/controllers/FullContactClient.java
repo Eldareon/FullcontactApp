@@ -38,6 +38,7 @@ public class FullContactClient {
         if (!isCorrectWebUrl(domainURL))
             return error(context.getString(R.string.incorrect_domain_url));
 
+
         return fullContactService.getCompanyData(domainURL, API_KEY);
     }
 

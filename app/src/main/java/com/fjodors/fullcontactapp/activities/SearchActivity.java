@@ -98,10 +98,14 @@ public class SearchActivity extends MenuActivity {
                         progressBar.setVisibility(View.GONE);
                     }).subscribe(
                     company -> {
-                        checkIfInHistory(searchText.getText().toString());
-                        Intent intent = new Intent(getBaseContext(), ResultActivity.class);
-                        intent.putExtra("companyData", company);
-                        startActivity(intent);
+                        if(company.getWebsite() != null) {
+                            checkIfInHistory(searchText.getText().toString());
+                            Intent intent = new Intent(getBaseContext(), ResultActivity.class);
+                            intent.putExtra("companyData", company);
+                            startActivity(intent);
+                        } else {
+                            notifyError(new Throwable(getString(R.string.no_data_error)));
+                        }
                     },
                     this::notifyError);
     }
