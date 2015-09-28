@@ -157,63 +157,41 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
                 ViewHolderMainInfo viewHolderMainInfo = (ViewHolderMainInfo) viewHolder;
 
-                if (company != null) {
-
-                    if (company.getLogo() != null)
-                        Picasso.with(context)
-                                .load(company.getLogo())
-                                .into(viewHolderMainInfo.companyLogo);
-
-                    if (company.getWebsite() != null)
-                        viewHolderMainInfo.companyWebsite.setText(company.getWebsite());
-
-                    if (company.getOrganization() != null) {
-
-                        if (company.getOrganization().getName() != null)
-                            viewHolderMainInfo.companyName.setText(company.getOrganization().getName());
-
-                        if (company.getOrganization().getFounded() != null) {
-                            if (!company.getOrganization().getFounded().equalsIgnoreCase(""))
-                                viewHolderMainInfo.companyFoundedYear.setText(company.getOrganization().getFounded());
-                            else
-                                viewHolderMainInfo.companyFoundedYear.setText(R.string.no_info);
-                        } else {
-                            viewHolderMainInfo.companyFoundedYear.setText(R.string.no_info);
-                        }
-
-                        if (company.getOrganization().getApproxEmployees() != null) {
-                            if (!company.getOrganization().getApproxEmployees().equalsIgnoreCase(""))
-                                viewHolderMainInfo.companyEmployeeCount.setText(company.getOrganization().getApproxEmployees());
-                            else
-                                viewHolderMainInfo.companyEmployeeCount.setText(R.string.no_info);
-                        } else {
-                            viewHolderMainInfo.companyEmployeeCount.setText(R.string.no_info);
-                        }
-                    }
-                }
-
+                Picasso.with(context)
+                        .load(company.getLogo())
+                        .into(viewHolderMainInfo.companyLogo);
+                viewHolderMainInfo.companyWebsite.setText(company.getWebsite());
+                viewHolderMainInfo.companyName.setText(company.getOrganizationName());
+                viewHolderMainInfo.companyFoundedYear.setText(company.getOrganizationFounded());
+                viewHolderMainInfo.companyEmployeeCount.setText(company.getOrganizationApproxEmployees());
                 break;
 
             case TYPE_COMPANY_URLS:
 
                 ViewHolderUrls viewHolderUrls = (ViewHolderUrls) viewHolder;
 
-                viewHolderUrls.companyLinkUrl.setText(company.getOrganization().getLinks().get(position - COMPANY_MAIN_INFO_SIZE).getUrl());
+                int companyUrlPosition = position - COMPANY_MAIN_INFO_SIZE;
+
+                viewHolderUrls.companyLinkUrl.setText(company.getOrganizationUrl(companyUrlPosition));
                 break;
 
             case TYPE_COMPANY_EMAILS:
 
                 ViewHolderEmails viewHolderEmails = (ViewHolderEmails) viewHolder;
 
-                viewHolderEmails.companyEmail.setText(company.getOrganization().getContactInfo().getEmailAddresses().get(position - linkListSize - COMPANY_MAIN_INFO_SIZE).getValue());
+                int companyEmailPosition = position - linkListSize - COMPANY_MAIN_INFO_SIZE;
+
+                viewHolderEmails.companyEmail.setText(company.getOrganizationEmailValue(companyEmailPosition));
                 break;
 
             case TYPE_COMPANY_BIOS:
 
                 ViewHolderBios viewHolderBios = (ViewHolderBios) viewHolder;
 
-                viewHolderBios.companyTypeName.setText(company.getSocialProfiles().get(position - emailListSize - linkListSize - COMPANY_MAIN_INFO_SIZE).getTypeName());
-                viewHolderBios.companyBio.setText(company.getSocialProfiles().get(position - emailListSize - linkListSize - COMPANY_MAIN_INFO_SIZE).getBio());
+                int companySocialProfilePosition = position - emailListSize - linkListSize - COMPANY_MAIN_INFO_SIZE;
+
+                viewHolderBios.companyTypeName.setText(company.getSocialProfileTypeName(companySocialProfilePosition));
+                viewHolderBios.companyBio.setText(company.getSocialProfileBio(companySocialProfilePosition));
                 break;
         }
     }
@@ -231,18 +209,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
 
     public void initDataLists() {
-
-        //check for null to avoid NPE in future for lists
-        if (company.getOrganization() != null) {
-            if (company.getOrganization().getLinks() != null)
-                linkListSize = company.getOrganization().getLinks().size();
-            if (company.getOrganization().getContactInfo() != null) {
-                if (company.getOrganization().getContactInfo().getEmailAddresses() != null)
-                    emailListSize = company.getOrganization().getContactInfo().getEmailAddresses().size();
-            }
-            if (company.getSocialProfiles() != null)
-                bioListSize = company.getSocialProfiles().size();
-        }
-
+        linkListSize = company.getOrganizationLinkList().size();
+        emailListSize = company.getOrganizationEmailList().size();
+        bioListSize = company.getSocialProfiles().size();
     }
 }

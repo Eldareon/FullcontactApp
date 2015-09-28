@@ -50,6 +50,8 @@ public class SearchActivity extends MenuActivity {
 
     private FullContactClient fullContactClient;
 
+    private Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +59,8 @@ public class SearchActivity extends MenuActivity {
         ButterKnife.bind(this);
 
         domains = new ArrayList<String>();
+
+        context = this;
 
         prefs = this.getSharedPreferences(DOMAINS_KEY, Context.MODE_PRIVATE);
         edit = prefs.edit();

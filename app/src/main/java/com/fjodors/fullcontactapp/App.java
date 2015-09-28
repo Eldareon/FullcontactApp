@@ -1,0 +1,22 @@
+package com.fjodors.fullcontactapp;
+
+import android.app.Application;
+import android.content.Context;
+
+/**
+ * Created by Fjodors on 29.09.2015..
+ */
+public class App extends Application {
+
+    private static Context mContext;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mContext = this;
+    }
+
+    public static Context getContext() {
+        return mContext;
+    }
+}

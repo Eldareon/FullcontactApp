@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.fjodors.fullcontactapp" >
+    package="com.fjodors.fullcontactapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".activities.SearchActivity"
             android:label="@string/app_name"
@@ -25,10 +26,8 @@
             android:name=".activities.ResultActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:parentActivityName=".activities.SearchActivity"
-            >
-        </activity>
+            android:screenOrientation="portrait"></activity>
 
     </application>
 
