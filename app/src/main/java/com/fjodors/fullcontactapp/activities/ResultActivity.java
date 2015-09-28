@@ -24,9 +24,6 @@ public class ResultActivity extends MenuActivity {
     @Bind(R.id.companyData)
     RecyclerView mRecyclerView;
 
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,10 +36,10 @@ public class ResultActivity extends MenuActivity {
 
         mRecyclerView.setHasFixedSize(true);
 
-        mLayoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new RecyclerAdapter(company, this);
+        RecyclerView.Adapter mAdapter = new RecyclerAdapter(company, this);
         mRecyclerView.setAdapter(mAdapter);
 
     }

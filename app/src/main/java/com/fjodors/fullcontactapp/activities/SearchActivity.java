@@ -50,8 +50,6 @@ public class SearchActivity extends MenuActivity {
 
     private FullContactClient fullContactClient;
 
-    private Context context;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,8 +57,6 @@ public class SearchActivity extends MenuActivity {
         ButterKnife.bind(this);
 
         domains = new ArrayList<String>();
-
-        context = this;
 
         prefs = this.getSharedPreferences(DOMAINS_KEY, Context.MODE_PRIVATE);
         edit = prefs.edit();
@@ -82,8 +78,7 @@ public class SearchActivity extends MenuActivity {
         if (throwable instanceof RetrofitError) {
             ErrorResponse errorResponse = (ErrorResponse) ((RetrofitError) throwable).getBodyAs(ErrorResponse.class);
             errorMsgTV.setText(errorResponse.message + " " + getString(R.string.try_again));
-        }
-        else {
+        } else {
             errorMsgTV.setText(throwable.getMessage() + " " + getString(R.string.try_again));
         }
     }
@@ -95,31 +90,33 @@ public class SearchActivity extends MenuActivity {
         searchButton.setEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
 
-            fullContactClient.getCompanyData(this, searchText.getText().toString())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnTerminate(() -> {
-                        searchButton.setEnabled(true);
-                        progressBar.setVisibility(View.GONE);
-                    }).subscribe(
-                    company -> {
-                        if(company.getWebsite() != null) {
-                            checkIfInHistory(searchText.getText().toString());
-                            Intent intent = new Intent(getBaseContext(), ResultActivity.class);
-                            intent.putExtra("companyData", company);
-                            startActivity(intent);
-                        } else {
-                            notifyError(new Throwable(getString(R.string.no_data_error)));
-                        }
-                    },
-                    this::notifyError);
+        fullContactClient.getCompanyData(this, searchText.getText().toString())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnTerminate(() -> {
+                    searchButton.setEnabled(true);
+                    progressBar.setVisibility(View.GONE);
+                }).subscribe(
+                company -> {
+                    if (company.getWebsite() != null) {
+                        checkIfInHistory(searchText.getText().toString());
+                        Intent intent = new Intent(this, ResultActivity.class);
+                        intent.putExtra("companyData", company);
+                        startActivity(intent);
+                    } else {
+                        notifyError(new Throwable(getString(R.string.no_data_error)));
+                    }
+                },
+                this::notifyError);
     }
 
     public void checkIfInHistory(String domainURL) {
         boolean isInHistory = false;
 
         for (String domain : domains) {
-            if (domain.equalsIgnoreCase(domainURL))
+            if (domain.equalsIgnoreCase(domainURL)) {
                 isInHistory = true;
+                break;
+            }
         }
 
         if (!isInHistory) {
@@ -137,7 +134,6 @@ public class SearchActivity extends MenuActivity {
         searchText.setAdapter(ACTadapter);
 
         saveDomainsToMemory();
-
     }
 
     public void saveDomainsToMemory() {
