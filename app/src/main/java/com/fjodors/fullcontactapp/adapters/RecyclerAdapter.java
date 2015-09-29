@@ -12,9 +12,6 @@ import com.fjodors.fullcontactapp.R;
 import com.fjodors.fullcontactapp.models.Company;
 import com.squareup.picasso.Picasso;
 
-import java.util.Collections;
-import java.util.List;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 

@@ -1,15 +1,10 @@
 package com.fjodors.fullcontactapp.models;
 
-import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.fjodors.fullcontactapp.App;
 import com.fjodors.fullcontactapp.R;
 import com.google.common.base.Optional;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
