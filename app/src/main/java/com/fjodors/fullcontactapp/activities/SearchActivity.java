@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.ProgressBar;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.fjodors.fullcontactapp.R;
@@ -31,8 +31,8 @@ public class SearchActivity extends MenuActivity {
 
     protected static final String TAG = "Fullcontact-Search";
 
-    @Bind(R.id.progressBar)
-    ProgressBar progressBar;
+    @Bind(R.id.progressContainer)
+    FrameLayout progressContainer;
 
     @Bind(R.id.errorMsg)
     TextView errorMsgTV;
@@ -87,14 +87,12 @@ public class SearchActivity extends MenuActivity {
     @OnClick(R.id.searchButton)
     public void searchData() {
         errorMsgTV.setVisibility(View.GONE);
-        searchButton.setEnabled(false);
-        progressBar.setVisibility(View.VISIBLE);
+        progressContainer.setVisibility(View.VISIBLE);
 
         fullContactClient.getCompanyData(this, searchText.getText().toString())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnTerminate(() -> {
-                    searchButton.setEnabled(true);
-                    progressBar.setVisibility(View.GONE);
+                    progressContainer.setVisibility(View.GONE);
                 }).subscribe(
                 company -> {
                     if (company.getWebsite() != null) {
